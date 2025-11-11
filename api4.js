@@ -48,11 +48,12 @@ app.use(cors({
 //app.use(is_authorized);
 
 
-// SQLite-based commands
-app.get('/getShellCommand', asyncHandler(apicall.process_get_shell_comand));
-app.post('/addShellCommand', asyncHandler(apicall.process_add_shell_command));
-
-
+app.use((req, res, next) => {
+  if (req.method === 'POST' && !req.is('application/json')) {
+    return res.status(400).json({ error: 'Expected Content-Type: application/json' });
+  }
+  next();
+});
 
 // ---------- Route Definitions Section ----------
 

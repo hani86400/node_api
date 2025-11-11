@@ -13,7 +13,7 @@ async function getDb() {
  * Body JSON: { "C": "ip a", "R": "Show IPs", "D": "2025-11-08", "V": 3 }
  * If D missing, use current date (YYYY-MM-DD).
  */
-export async function process_add_shell_coomand(req, res) {
+export async function process_add_shell_command(req, res) {
   try {
     const db = await getDb();
 
@@ -59,7 +59,7 @@ export async function process_add_shell_coomand(req, res) {
  * GET /getShellCoomand?cols=C,R or cols=C,R,D
  * Selects the least-used command, increments V, returns chosen columns.
  */
-export async function process_get_shell_coomand(req, res) {
+export async function process_get_shell_command(req, res) {
   //throw new Error('Fake DB error for testing');	
   try {
     const db = await getDb();

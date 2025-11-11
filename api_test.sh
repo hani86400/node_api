@@ -107,8 +107,21 @@ echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
 T_ENDPOINT='/api/v1/squares/area'
 T_NAME="${T_ENDPOINT}"
 T_PAYLOAD='{"side":6,"unit":"cm"}'
-echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} ${T_PAYLOAD}]\e[0m"
-"${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOAD}]\e[0m"
+"${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: POST  [${T_NAME}] OK" || fail "Testing endpoint: POST [${T_NAME}] FAIL"
+
+
+T_ENDPOINT='/api/v1/commands/least-used'
+T_NAME="${T_ENDPOINT}"
+echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
+"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+
+T_ENDPOINT='/api/v1/commands'
+T_NAME="${T_ENDPOINT}"
+T_PAYLOAD='{"C":"ip a","R":"Show IPs","D":"2025-11-08","V":3}' 
+echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOAD}]\e[0m"
+"${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: POST  [${T_NAME}] OK" || fail "Testing endpoint: POST [${T_NAME}] FAIL"
+
 
 
 
