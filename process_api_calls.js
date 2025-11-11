@@ -60,6 +60,7 @@ export async function process_add_shell_coomand(req, res) {
  * Selects the least-used command, increments V, returns chosen columns.
  */
 export async function process_get_shell_coomand(req, res) {
+  //throw new Error('Fake DB error for testing');	
   try {
     const db = await getDb();
 
@@ -73,7 +74,7 @@ export async function process_get_shell_coomand(req, res) {
 
     // 3) Determine which columns to return
     //    Example: ?cols=C,R,D
-    const colsParam = (req.query.cols || 'C,R').trim(); // default to C,R
+    const colsParam = (req.query.cols || 'C,R,V').trim(); // default to C,R
     const allowed = ['N', 'C', 'R', 'D', 'V'];          // safety whitelist
     const cols = colsParam
       .split(',')

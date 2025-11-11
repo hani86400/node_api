@@ -5,16 +5,19 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "remark": "Just remark",
     "start": "node    api4.js",
-    "dev":   "nodemon app3.js",    
+    "dev": "nodemon app3.js",
     "test": "bash api_test.sh"
-    },
+  },
   "keywords": [],
-  "author": "",
+  "author": "Hani",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "sqlite":  "^5.1.1",
+    "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
