@@ -98,10 +98,15 @@ T_NAME="${T_ENDPOINT}"
 echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
 "${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
 
-T_ENDPOINT='/api/v1/squares/area?side=5&unit=cm'
-T_NAME="${T_ENDPOINT}"
+
+# GET /api/v1/squares/area?side=3&unit=cm => area = 9, unit ends with "²"
+T_ENDPOINT='/api/v1/squares/area?side=33&unit=cm'
 echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
-"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+resp="$("${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}")"
+test "$(jq -r '.area' <<<"$resp")" = "9"   || fail "area mismatch for GET /api/v1/squares/area"
+test "$(jq -r '.unit' <<<"$resp")" = "cm²" || fail "unit mismatch for GET /api/v1/squares/area"
+pass "${T_ENDPOINT} (GET) OK"
+exit
 
 
 T_ENDPOINT='/api/v1/squares/area'
@@ -122,6 +127,49 @@ T_PAYLOAD='{"C":"ip a","R":"Show IPs","D":"2025-11-08","V":3}'
 echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOAD}]\e[0m"
 "${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: POST  [${T_NAME}] OK" || fail "Testing endpoint: POST [${T_NAME}] FAIL"
 
+
+T_ENDPOINT='/api/items'
+T_NAME="${T_ENDPOINT}"
+echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
+"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+
+T_ENDPOINT='/api/items/1'
+T_NAME="${T_ENDPOINT}"
+echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
+"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+
+
+T_ENDPOINT='/api/items/2'
+T_NAME=" -X DELETE  ${T_ENDPOINT}"
+echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
+#"${CURL[@]}" -X DELETE "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+
+
+T_RANDOM=$(date +%s )
+T_ENDPOINT="/api/items/1"
+T_NAME="${T_ENDPOINT}"
+T_PAYLOAD="{\"name\": \"name${T_RANDOM}\", \"password\": \"PaSs${T_RANDOM}\" , \"email\": \"name${T_RANDOM}@hani.com\" }"
+echo -e "\n\e[1;95mTesting endpoint: PUT [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOAD}]\e[0m"
+"${CURL[@]}" -X PUT "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: PUT  [${T_NAME}] OK" || fail "Testing endpoint: PUT [${T_NAME}] FAIL"
+
+
+
+
+
+T_RANDOM=$(date +%s )
+T_ENDPOINT="/api/items"
+T_NAME="${T_ENDPOINT}"
+T_PAYLOAD="{\"name\": \"name${T_RANDOM}\", \"password\": \"PaSs${T_RANDOM}\" , \"email\": \"name${T_RANDOM}@hani.com\" }"
+echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOAD}]\e[0m"
+"${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: POST  [${T_NAME}] OK" || fail "Testing endpoint: POST [${T_NAME}] FAIL"
+
+
+
+
+T_ENDPOINT='/api/items'
+T_NAME="${T_ENDPOINT}"
+echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
+#"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
 
 
 
