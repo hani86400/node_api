@@ -100,7 +100,7 @@ echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
 
 
 # GET /api/v1/squares/area?side=3&unit=cm => area = 9, unit ends with "²"
-T_ENDPOINT='/api/v1/squares/area?side=33&unit=cm'
+T_ENDPOINT='/api/v1/squares/area?side=3&unit=cm'
 echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
 resp="$("${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}")"
 test "$(jq -r '.area' <<<"$resp")" = "9"   || fail "area mismatch for GET /api/v1/squares/area"
@@ -128,6 +128,12 @@ echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLO
 "${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: POST  [${T_NAME}] OK" || fail "Testing endpoint: POST [${T_NAME}] FAIL"
 
 
+
+
+
+echo -e "\n
+\e[1;93m[In-memory items CRUD]\e[0m
+\n"
 T_ENDPOINT='/api/items'
 T_NAME="${T_ENDPOINT}"
 echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
@@ -163,13 +169,10 @@ T_PAYLOAD="{\"name\": \"name${T_RANDOM}\", \"password\": \"PaSs${T_RANDOM}\" , \
 echo -e "\n\e[1;95mTesting endpoint: POST [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOAD}]\e[0m"
 "${CURL[@]}" -X POST "${BASE_URL}${T_ENDPOINT}" -d "${T_PAYLOAD}" | jq && pass "Testing endpoint: POST  [${T_NAME}] OK" || fail "Testing endpoint: POST [${T_NAME}] FAIL"
 
-
-
-
 T_ENDPOINT='/api/items'
 T_NAME="${T_ENDPOINT}"
 echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
-#"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
+"${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
 
 
 

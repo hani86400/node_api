@@ -6,9 +6,9 @@
   "main": "index.js",
   "scripts": {
     "remark": "Just remark",
-    "start": "node    api4.js",
-    "dev": "nodemon app3.js",
-    "test": "bash api_test.sh"
+    "start": "node    api.js",
+    "dev": "nodemon app.js",
+    "test": "bash api.sh"
   },
   "keywords": [],
   "author": "Hani",

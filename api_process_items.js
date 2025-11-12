@@ -1,4 +1,4 @@
-// process_items.js
+// api_process_items
 // simple in-memory CRUD store
 
 // our dataset

@@ -1,3 +1,4 @@
+// api_process_commands.js
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
@@ -34,10 +35,7 @@ export async function process_add_shell_command(req, res) {
     }
 
     // Run parameterized INSERT
-    const result = await db.run(
-      'INSERT INTO CMD (C, R, D, V) VALUES (?, ?, ?, ?)',
-      [C.trim(), R, D, V]
-    );
+    const result = await db.run('INSERT INTO CMD (C, R, D, V) VALUES (?, ?, ?, ?)', [C.trim(), R, D, V] );
 
     const inserted = await db.get('SELECT * FROM CMD WHERE N = ?', [result.lastID]);
 

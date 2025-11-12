@@ -3,8 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 // ---------- Route Handlers Section ----------
-import * as apicall  from './process_api_calls.js';
-import * as apicall2 from './process_api_items.js';
+import * as apicall  from './api_process_commands.js';
+import * as apicall2 from './api_process_items.js';
 Object.entries(apicall).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 
 const app = express();
