@@ -1,0 +1,25 @@
+# --- Build Stage ---
+FROM node:24-bookworm-slim AS build
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Copy all app files
+COPY . .
+
+# Remove sensitive / runtime-only files
+RUN rm -f .env db/api.sqlite3  # just to be safe; these come from host
+
+# --- Runtime Stage ---
+FROM gcr.io/distroless/nodejs24-debian12
+WORKDIR /app
+
+# Copy only the built app and its dependencies
+COPY --from=build /app /app
+
+# Expose your API port for documentation (not enforced by Docker)
+EXPOSE 3000
+
+# Distroless already knows the entrypoint is `node`
+CMD ["api.js"]

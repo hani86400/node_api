@@ -1,0 +1,9 @@
+FROM node:24-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN apk add --no-cache python3 make g++ && npm rebuild sqlite3 --build-from-source && apk del python3 make g++
+RUN npm ci --omit=dev
+COPY . .
+RUN rm -f .env db/api.sqlite3  # just to be safe; these come from host
+EXPOSE 3000
+CMD ["node", "api.js"]

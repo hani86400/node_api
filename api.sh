@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #######################################################################
-# source api_test.sh             [ 2025_11_08 ] #
+# source api.sh                                        [ 2025_11_13 ] #
 #######################################################################
 
 # Strict mode so failures actually FAIL.
-set -Eeuo pipefail
+#set -Eeuo pipefail
 
 # If any command errors, show line number
-trap 'fail "Test failed at line $LINENO"' ERR
+#trap 'fail "Test failed at line $LINENO"' ERR
 
 
 
@@ -17,9 +17,9 @@ trap 'fail "Test failed at line $LINENO"' ERR
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # [begin] _EXPORT
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-THIS_SCRIPT='api_test.sh'
+THIS_SCRIPT='api.sh'
 LOG_FILE='/tmp/api_test.log'
-
+WORK_DIR=${WORK_DIR:-"/tmp"}
 BASE_URL=${BASE_URL:-"http://localhost:3000"}
 API_TOKEN=${API_TOKEN:-"12345"}     # must match your server env
 CURL=(curl -fsS -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json")
@@ -40,21 +40,32 @@ fail() { echo -e "❌ $*" >&2; exit 1; }
 
 
 #######################################################################
-# f u n c t i o n                                      [ 2025_11_08 ] #
-                  test123(){
-# $1: ARG_1 (required - filename)
-# $2: ARG_2 (optional)
+# f u n c t i o n                                      [ 2025_11_13 ] #
+                  do_df(){
 #######################################################################
-echo '1'
+if [ $# -lt 3 ]
+then 
+echo -e "Usage: \033[1;do_df \033[1;35m<DOCKER_FILE> <IMAGE_NAME> <IMAGE_TAG> \033[0m"
+echo "do_df 'Dockerfile_bookworm'    'nodeapi' '25b13' "
+echo "do_df 'Dockerfile_multi_stage' 'nodeapi' '25b13ms' "
+echo "do_df 'Dockerfile_distroless'  'nodeapi' '25b13dless' "
+return 1 
+fi
+
+local DOCKER_FILE="$1"
+local IMAGE_NAME="$2"
+local IMAGE_TAG="$3"
+
+docker image rm -f "${IMAGE_NAME}":"${IMAGE_TAG}"
+cd "${WORK_DIR}"
+docker build . --no-cache -f "${DOCKER_FILE}" -t "${IMAGE_NAME}":"${IMAGE_TAG}"
+docker image ls | grep "${IMAGE_NAME}"
 } # f u n c t i o n [END] #############################################
 
-
-# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# : [initialize] 
-# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-echo -e "\n$(date +%Y_%m_%d_%H_%M_%S)  BEGIN: ${THIS_SCRIPT} " | tee -a ${LOG_FILE}
-
-
+#######################################################################
+# f u n c t i o n                                      [ 2025_11_13 ] #
+                  do_test(){
+#######################################################################
 # Ensure jq exists (we want real JSON checks)
 command -v jq >/dev/null || fail "jq is required. Install it: sudo dnf/apt install jq"
 
@@ -106,7 +117,7 @@ resp="$("${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}")"
 test "$(jq -r '.area' <<<"$resp")" = "9"   || fail "area mismatch for GET /api/v1/squares/area"
 test "$(jq -r '.unit' <<<"$resp")" = "cm²" || fail "unit mismatch for GET /api/v1/squares/area"
 pass "${T_ENDPOINT} (GET) OK"
-exit
+
 
 
 T_ENDPOINT='/api/v1/squares/area'
@@ -151,7 +162,8 @@ echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
 #"${CURL[@]}" -X DELETE "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
 
 
-T_RANDOM=$(date +%s )
+
+T_RANDOM=$(shuf -i 1-100 -n 1)  #T_RANDOM=$(( (RANDOM % 100) + 1 ))  T_RANDOM=$(date +%s )
 T_ENDPOINT="/api/items/1"
 T_NAME="${T_ENDPOINT}"
 T_PAYLOAD="{\"name\": \"name${T_RANDOM}\", \"password\": \"PaSs${T_RANDOM}\" , \"email\": \"name${T_RANDOM}@hani.com\" }"
@@ -162,7 +174,7 @@ echo -e "\n\e[1;95mTesting endpoint: PUT [${BASE_URL}${T_ENDPOINT} -d ${T_PAYLOA
 
 
 
-T_RANDOM=$(date +%s )
+T_RANDOM=$(( (RANDOM % 100) + 1 ))  #T_RANDOM=$(shuf -i 1-100 -n 1) T_RANDOM=$(( (RANDOM % 100) + 1 ))  T_RANDOM=$(date +%s )
 T_ENDPOINT="/api/items"
 T_NAME="${T_ENDPOINT}"
 T_PAYLOAD="{\"name\": \"name${T_RANDOM}\", \"password\": \"PaSs${T_RANDOM}\" , \"email\": \"name${T_RANDOM}@hani.com\" }"
@@ -174,8 +186,13 @@ T_NAME="${T_ENDPOINT}"
 echo -e "\n\e[1;95mTesting endpoint: [${BASE_URL}${T_ENDPOINT}]\e[0m"
 "${CURL[@]}" -X GET "${BASE_URL}${T_ENDPOINT}" | jq && pass "Testing endpoint: [${T_NAME}] OK" || fail "Testing endpoint: [${T_NAME}] FAIL"
 
+} # f u n c t i o n [END] #############################################
 
 
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# : [initialize] 
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+echo -e "\n$(date +%Y_%m_%d_%H_%M_%S)  BEGIN: ${THIS_SCRIPT} " | tee -a ${LOG_FILE}
 
 
 #echo -e "\e[1;90m[black_90]\e[0m" echo -e "\e[1;91m[red_91]\e[0m" echo -e "\e[1;92m[green_92]\e[0m" echo -e "\e[1;93m[yellow_93]\e[0m" echo -e "\e[1;94m[blue_94]\e[0m" echo -e "\e[1;95m[purble_95]\e[0m" echo -e "\e[1;96m[cyan_96]\e[0m" echo -e "\e[1;97m[white_97]\e[0m"

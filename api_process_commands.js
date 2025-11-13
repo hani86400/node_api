@@ -2,9 +2,11 @@
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
+const dbPath = process.env.SQLITE_PATH || './db/api.sqlite3';
+
 async function getDb() {
   return open({
-    filename: '/home/hani/node_api/api.sqlite3',
+    filename: dbPath,
     driver: sqlite3.Database
   });
 }
@@ -96,7 +98,7 @@ export async function process_get_shell_command(req, res) {
 
 
 // ---------- Route Handlers Section ----------
-// process_api_calls.js
+
 // Handler: GET /getRequestInfo
 export function process_get_request_info(req, res) {
   const info = {
