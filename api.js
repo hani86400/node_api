@@ -11,8 +11,7 @@ import * as api_commands1     from './api_process_commands1.js';
 import * as api_commands2     from './api_process_commands2.js';
 import * as api_items         from './api_process_items.js';
 
-
-Object.entries(api_square).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+console.log(Object.keys(api_square));
 Object.entries(api_request_info).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 Object.entries(api_items).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 Object.entries(api_commands1).forEach(([name, fn]) => console.log(`Loaded ${name}`));
