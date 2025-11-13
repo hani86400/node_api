@@ -4,9 +4,19 @@ import dotenv from 'dotenv';
 
 // ---------- Route Handlers Section ----------
 
-import * as apicall  from './api_process_commands.js';
-import * as apicall2 from './api_process_items.js';
-Object.entries(apicall).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+
+import * as api_square        from './api_process_square.js';
+import * as api_request_info  from './api_process_request_info.js';
+import * as api_commands1     from './api_process_commands1.js';
+import * as api_commands2     from './api_process_commands2.js';
+import * as api_items         from './api_process_items.js';
+
+
+Object.entries(api_square).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+Object.entries(api_request_info).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+Object.entries(api_items).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+Object.entries(api_commands1).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+Object.entries(api_commands2).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 
 const app = express();
 
@@ -63,23 +73,28 @@ app.get( '/', (req, res) => { res.send('<h1>Hello from Node in vm1 👋</h1>'); 
 app.get( '/health', (req, res) => { res.json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });});
 
 // Info endpoints
-app.get( '/api/v1/request-info', asyncHandler(apicall.process_get_request_info));
+app.get( '/api/v1/request-info', asyncHandler(api_request_info.process_get_request_info));
 
 // Math utilities (square geometry)
-app.post('/api/v1/squares/area', asyncHandler(apicall.process_post_square_area));
-app.get( '/api/v1/squares/area', asyncHandler(apicall.process_get_square_area));
-app.get( '/api/v1/squares/perimeter', asyncHandler(apicall.process_get_square_perimeter));
+app.post('/api/v1/squares/area', asyncHandler(api_square.process_post_square_area));
+app.get( '/api/v1/squares/area', asyncHandler(api_square.process_get_square_area));
+app.get( '/api/v1/squares/perimeter', asyncHandler(api_square.process_get_square_perimeter));
 
 // SQLite-based shell command endpoints
-app.get( '/api/v1/commands/least-used', asyncHandler(apicall.process_get_shell_command));
-app.post('/api/v1/commands', asyncHandler(apicall.process_add_shell_command));
+app.get( '/api/v1/commands/least-used', asyncHandler(api_commands1.process_get_shell_command));
+app.post('/api/v1/commands', asyncHandler(api_commands1.process_add_shell_command));
+
+app.get( '/api/v1/commands/least-used', asyncHandler(api_commands2.process_get_shell_command));
+app.post('/api/v1/commands', asyncHandler(api_commands2.process_add_shell_command));
+
+
 
 // In-memory items CRUD
-app.get('/api/items', asyncHandler(apicall2.process_get_all_items));
-app.get('/api/items/:id', asyncHandler(apicall2.process_get_item));
-app.post('/api/items', asyncHandler(apicall2.process_add_item));
-app.put('/api/items/:id', asyncHandler(apicall2.process_update_item));
-app.delete('/api/items/:id', asyncHandler(apicall2.process_delete_item));
+app.get('/api/items', asyncHandler(api_items.process_get_all_items));
+app.get('/api/items/:id', asyncHandler(api_items.process_get_item));
+app.post('/api/items', asyncHandler(api_items.process_add_item));
+app.put('/api/items/:id', asyncHandler(api_items.process_update_item));
+app.delete('/api/items/:id', asyncHandler(api_items.process_delete_item));
 
 
 
