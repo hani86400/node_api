@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Docker Image CI to GHCR
 
 on:
 
@@ -14,7 +14,17 @@ jobs:
       contents: read
       packages: write # Required to push to GHCR
 
+
     steps:
+
+      # Step 1: Set the Environment Variable
+      - name: Set Environment Variable for Tag
+        run: |
+          TAG_VALUE=$(date +%s)
+          echo "CURRENT_TAG=$TAG_VALUE" >> $GITHUB_ENV
+          echo "The tag will be $TAG_VALUE"
+        # Ensure this step always runs before the build
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -35,6 +45,20 @@ jobs:
           context: . # Path to the build context (where your Dockerfile is)
           file: ./Dockerfile_distroless # Path to your Dockerfile
           push: true # Set to true to push to a registry
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}
+#         tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+#         tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+#         tags: ghcr.io/${{ github.repository }}:run-${{ github.run_number }}
+#         tags: ghcr.io/${{ github.repository }}:latest
 #         cache-from: type=gha # Optional: enable GitHub Actions cache for faster builds
 #         cache-to: type=gha,mode=max # Optional: enable GitHub Actions cache for faster builds
+
+
+      - name: Log Docker Pull Command
+        run: |
+          echo "Successfully pushed image. To pull, run:"
+          echo "docker pull ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}"
+
+
+
+
