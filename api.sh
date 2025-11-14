@@ -36,7 +36,7 @@ CURL=(curl -fsS -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: applic
 
 # Pretty output helpers
 pass() { echo -e "\n✅ $*"; }
-fail() { echo -e "❌ $*" >&2; exit 1; }
+fail() { echo -e "❌ $*" >&2; Qexit 1; }
 
 
 #######################################################################
@@ -49,6 +49,7 @@ echo -e "Usage: \033[1;do_df \033[1;35m<DOCKER_FILE> <IMAGE_NAME> <IMAGE_TAG> \0
 echo "do_df 'Dockerfile_bookworm'    'nodeapi' '25b13' "
 echo "do_df 'Dockerfile_multi_stage' 'nodeapi' '25b13ms' "
 echo "do_df 'Dockerfile_distroless'  'nodeapi' '25b13dless' "
+echo "do_df 'Dockerfile_alpine'      'nodeapi' '25b13alpine' "
 return 1 
 fi
 

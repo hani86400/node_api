@@ -13,7 +13,8 @@ services:
 # platform: linux/x86_64
 # image: nodeapi:20251113
 # image: nodeapi:25b13ms
-  image: nodeapi:  25b13dless
+# image: nodeapi:25b13dless
+  image: nodeapi:25b13alpine
   container_name: nodeapi
   hostname: nodeapi
   env_file:

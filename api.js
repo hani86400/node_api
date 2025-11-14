@@ -7,14 +7,14 @@ import dotenv from 'dotenv';
 
 import * as api_square        from './api_process_square.js';
 import * as api_request_info  from './api_process_request_info.js';
-import * as api_commands1     from './api_process_commands1.js';
+//import * as api_commands1     from './api_process_commands1.js';
 import * as api_commands2     from './api_process_commands2.js';
 import * as api_items         from './api_process_items.js';
 
 console.log(Object.keys(api_square));
 Object.entries(api_request_info).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 Object.entries(api_items).forEach(([name, fn]) => console.log(`Loaded ${name}`));
-Object.entries(api_commands1).forEach(([name, fn]) => console.log(`Loaded ${name}`));
+//Object.entries(api_commands1).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 Object.entries(api_commands2).forEach(([name, fn]) => console.log(`Loaded ${name}`));
 
 const app = express();
@@ -80,8 +80,8 @@ app.get( '/api/v1/squares/area', asyncHandler(api_square.process_get_square_area
 app.get( '/api/v1/squares/perimeter', asyncHandler(api_square.process_get_square_perimeter));
 
 // SQLite-based shell command endpoints
-app.get( '/api/v1/commands/least-used', asyncHandler(api_commands1.process_get_shell_command));
-app.post('/api/v1/commands', asyncHandler(api_commands1.process_add_shell_command));
+//app.get( '/api/v1/commands/least-used', asyncHandler(api_commands1.process_get_shell_command));
+//app.post('/api/v1/commands', asyncHandler(api_commands1.process_add_shell_command));
 
 app.get( '/api/v1/commands/least-used', asyncHandler(api_commands2.process_get_shell_command));
 app.post('/api/v1/commands', asyncHandler(api_commands2.process_add_shell_command));
