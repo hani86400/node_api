@@ -1,0 +1,100 @@
+name: Docker Image CI to GHCR (2)
+
+on:
+  push:
+    branches: [ main123 ]
+  workflow_dispatch:
+
+env:
+  RESEND_API_URL: ${{ vars.RESEND_API_URL }}
+  RESEND_API_H_AUTH: ${{ secrets.RESEND_API_H_AUTH }}
+  EMAIL_FROM: ${{ secrets.COC_EMAIL }}
+  EMAIL_TO: ${{ secrets.ADMIN_EMAIL }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+
+      - name: Set Environment Variable for Tag
+        run: |
+          TAG_VALUE=$(date +%s)
+          echo "CURRENT_TAG=$TAG_VALUE" >> $GITHUB_ENV
+          echo "The tag will be $TAG_VALUE"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        id: buildpush
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          file: ./Dockerfile_busybox
+          tags: ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}
+
+      - name: Log Docker Pull Command
+        run: |
+          echo "Successfully pushed image. To pull, run:"
+          echo "docker pull ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}"
+
+      # --- Success Notification ---
+      - name: Send Success Email
+        if: success()
+        run: |
+          IMAGE_URL="ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}"
+          MESSAGE="<h3>✅ Docker Image Build Complete</h3>
+          <p><b>Repository:</b> ${{ github.repository }}</p>
+          <p><b>Tag:</b> ${{ env.CURRENT_TAG }}</p>
+          <p><b>Pull command:</b><br>
+          <code>docker pull $IMAGE_URL</code></p>
+          <p><b>Workflow Run:</b> <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Logs</a></p>"
+
+          PAYLOAD=$(jq -n \
+            --arg from "$EMAIL_FROM" \
+            --arg to "$EMAIL_TO" \
+            --arg subject "Docker Image Build Success ✅" \
+            --arg html "$MESSAGE" \
+            '{from:$from,to:$to,subject:$subject,html:$html}')
+
+          curl -s -X POST "$RESEND_API_URL" \
+            -H "$RESEND_API_H_AUTH" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
+
+      # --- Failure Notification ---
+      - name: Send Failure Email
+        if: failure()
+        run: |
+          MESSAGE="<h3>❌ Docker Image Build Failed</h3>
+          <p><b>Repository:</b> ${{ github.repository }}</p>
+          <p><b>Branch:</b> ${{ github.ref_name }}</p>
+          <p><b>Commit:</b> ${{ github.sha }}</p>
+          <p><b>Workflow Run:</b> <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Logs</a></p>"
+
+          PAYLOAD=$(jq -n \
+            --arg from "$EMAIL_FROM" \
+            --arg to "$EMAIL_TO" \
+            --arg subject "Docker Image Build Failed ❌" \
+            --arg html "$MESSAGE" \
+            '{from:$from,to:$to,subject:$subject,html:$html}')
+
+          curl -s -X POST "$RESEND_API_URL" \
+            -H "$RESEND_API_H_AUTH" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
