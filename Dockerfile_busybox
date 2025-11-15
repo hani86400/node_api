@@ -1,5 +1,5 @@
 # Start from the BusyBox base image
-FROM busybox:latest
+FROM busyboxQ:latest
 
 # Set the command to run when the container starts
 CMD ["/bin/sh", "-c", "echo 'Hello from BusyBox!' && sleep 5"]
