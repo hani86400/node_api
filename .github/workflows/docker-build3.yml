@@ -1,9 +1,21 @@
-name: Docker Image CI to GHCR (2)
+name: Docker Image CI to GHCR (3)
 
 on:
   push:
     branches: [ main123 ]
   workflow_dispatch:
+    inputs:
+      dockerfile_choice:
+        type: choice
+        description: "Select the Dockerfile to build"
+        required: true
+        options:
+          - Dockerfile_alpine
+          - Dockerfile_bookworm
+          - Dockerfile_busybox
+          - Dockerfile_distroless
+          - Dockerfile_multi_stage
+          - Dockerfile_node_api
 
 env:
   RESEND_API_URL: ${{ vars.RESEND_API_URL }}
@@ -19,12 +31,14 @@ jobs:
       packages: write
 
     steps:
-
-      - name: Set Environment Variable for Tag
+      - name: Set Environment Variables
         run: |
           TAG_VALUE=$(date +%s)
+          TAG_VALUE="$(date +%Y%m%d-%H%M%S)-${{ github.event.inputs.dockerfile_choice }}"          
           echo "CURRENT_TAG=$TAG_VALUE" >> $GITHUB_ENV
+          echo "DOCKER_FILE=${{ github.event.inputs.dockerfile_choice }}" >> $GITHUB_ENV
           echo "The tag will be $TAG_VALUE"
+          echo "Using Dockerfile: ${{ github.event.inputs.dockerfile_choice }}"
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,7 +59,7 @@ jobs:
         with:
           context: .
           push: true
-          file: ./Dockerfile_busybox
+          file: ./${{ env.DOCKER_FILE }}
           tags: ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}
 
       - name: Log Docker Pull Command
@@ -61,6 +75,7 @@ jobs:
           MESSAGE="<h3>✅ Docker Image Build Complete</h3>
           <p><b>Repository:</b> ${{ github.repository }}</p>
           <p><b>Tag:</b> ${{ env.CURRENT_TAG }}</p>
+          <p><b>Dockerfile:</b> ${{ env.DOCKER_FILE }}</p>
           <p><b>Pull command:</b><br>
           <code>docker pull $IMAGE_URL</code></p>
           <p><b>Workflow Run:</b> <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Logs</a></p>"
@@ -84,6 +99,7 @@ jobs:
           MESSAGE="<h3>❌ Docker Image Build Failed</h3>
           <p><b>Repository:</b> ${{ github.repository }}</p>
           <p><b>Branch:</b> ${{ github.ref_name }}</p>
+          <p><b>Dockerfile:</b> ${{ env.DOCKER_FILE }}</p>
           <p><b>Commit:</b> ${{ github.sha }}</p>
           <p><b>Workflow Run:</b> <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Logs</a></p>"
 
