@@ -10,9 +10,9 @@ on:
         description: "Select the Dockerfile to build"
         required: true
         options:
+          - Dockerfile_busybox
           - Dockerfile_alpine
           - Dockerfile_bookworm
-          - Dockerfile_busybox
           - Dockerfile_distroless
           - Dockerfile_multi_stage
           - Dockerfile_node_api
