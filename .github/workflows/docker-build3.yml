@@ -39,6 +39,9 @@ jobs:
           echo "DOCKER_FILE=${{ github.event.inputs.dockerfile_choice }}" >> $GITHUB_ENV
           echo "The tag will be $TAG_VALUE"
           echo "Using Dockerfile: ${{ github.event.inputs.dockerfile_choice }}"
+          CURRENT_SECOND=$(date +%s)
+          echo "CURRENT_SECOND=$CURRENT_SECOND" >> $GITHUB_ENV
+          
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -83,7 +86,7 @@ jobs:
           PAYLOAD=$(jq -n \
             --arg from "$EMAIL_FROM" \
             --arg to "$EMAIL_TO" \
-            --arg subject "Docker Image Build Success ✅" \
+            --arg subject "Docker Image Build Success ✅ ${{ CURRENT_SECOND }}" \
             --arg html "$MESSAGE" \
             '{from:$from,to:$to,subject:$subject,html:$html}')
 
