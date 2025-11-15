@@ -43,9 +43,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: . # Path to the build context (where your Dockerfile is)
-          file: ./Dockerfile_distroless # Path to your Dockerfile
           push: true # Set to true to push to a registry
           tags: ghcr.io/${{ github.repository }}:${{ env.CURRENT_TAG }}
+          file: ./Dockerfile_busybox # Path to your Dockerfile
+#         file: ./Dockerfile_distroless # Path to your Dockerfile
 #         tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
 #         tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
 #         tags: ghcr.io/${{ github.repository }}:run-${{ github.run_number }}
