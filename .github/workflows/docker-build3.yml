@@ -86,7 +86,7 @@ jobs:
           PAYLOAD=$(jq -n \
             --arg from "$EMAIL_FROM" \
             --arg to "$EMAIL_TO" \
-            --arg subject "Docker Image Build Success ✅ ${{ CURRENT_SECOND }}" \
+            --arg subject "Docker Image Build Success ✅ ${{ env.CURRENT_SECOND }}" \
             --arg html "$MESSAGE" \
             '{from:$from,to:$to,subject:$subject,html:$html}')
 
